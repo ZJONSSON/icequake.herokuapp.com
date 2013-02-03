@@ -127,12 +127,10 @@ function resize() {
   .style("fill-opacity",function(d) { return options.Opacity/100; });
 }
 
-window.onload = function() {
-  var gui = new dat.GUI();
-  gui.add(options, 'size', 1, 10).onChange(resize);
-  gui.add(options, 'Opacity', 0, 100).onChange(resize);
-  gui.add(options,'# mapped',50,5000,50).onFinishChange(refresh);
-};
+var gui = new dat.GUI();
+gui.add(options, 'size', 1, 10).onChange(resize);
+gui.add(options, 'Opacity', 0, 100).onChange(resize);
+gui.add(options,'# mapped',50,5000,50).onFinishChange(refresh);
 
 addChart("ml",'Magnitude (Richter)',d3.scale.linear().domain([0,6]));
 addChart("z",'Depth (km)',d3.scale.linear().domain([0,30]));
