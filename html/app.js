@@ -149,21 +149,6 @@ function refresh() {
 
     c.forEach(function(d) { d.refresh();});
     d3.select("#loading").style("visibility","hidden");
-
-var node = svg.selectAll(".circle")
-    .data(nodes)
-  .enter().append("g")
-    .attr("class", "node")
-    .call(force.drag);
-
-node.append("circle")
-    .attr("r", 4.5);
-
-node.append("text")
-    .attr("dx", 12)
-    .attr("dy", ".35em")
-    .text(function(d) { return d.name });
-
   });
 }
 
