@@ -12,7 +12,6 @@ body {
   left:50%;
 }
 
-
 #options  {
   position: absolute;
   top: 60;
@@ -20,11 +19,26 @@ body {
 
 }
 
+#list  {
+  position: absolute;
+  top: 410;
+  background: rgb(255, 255, 255);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  margin-left: 20px;
+  border:1px solid;
+  border-radius:7px;
+  -moz-border-radius:7px;
+  box-shadow: -10px 15px 7px rgba(0,0,0,0.5);
+  font-family: Arial,Helvetica,Garuda,sans-serif;;
+  font-size: 80%;
+}
+
 #charts  {
   position: absolute;
   font: 10px sans-serif;
   background: rgb(255, 255, 255);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
   padding: 10px;
   top: 20;
   margin-left: 20px;
@@ -69,6 +83,7 @@ body {
   fill : red;
   stroke : none;
 }
+
 
 .y2_top {
   text-anchor : end;

@@ -68,7 +68,7 @@ function addChart(dim,title,scale) {
       .setTitle("chart",title)
       .setTitle("y2_top","")
       .scale("x",scale)
-      .axis("x",function(d) { d.ticks(6); })
+      .axis("x",function(d) { d.ticks(8); })
       .resize()  // must resize to have the right height for the brush
       .on("resize.autofit2",function() {
         var nodes = chart.graph.selectAll(":not(.exiting)");
@@ -83,7 +83,7 @@ function addChart(dim,title,scale) {
     .call(brush)
     .selectAll("rect")
     .attr("y",height[1])
-    .attr("height",height[0]-height[1]);
+    .attr("height",height[0]-height[1])
 
   brush.on("brushend",function() {
       var extent  = brush.extent();
@@ -129,6 +129,16 @@ function refresh() {
 
   d3.json("/eq?filter="+JSON.stringify(filter)+"&num="+options['# mapped'],function(err,d) {
     data = d;
+    console.log(data);
+    $("#list").hide();
+    $("#list").empty();
+    console.log(data.top.length);
+    if (data.top.length < 15 && data.top.length >0){
+    data.top.forEach(function(d) {
+    $("#list").append(d.dt.toString().slice(0,10)+" Magnitude: <b>"+d.ml+"</b> Depth: <b>"+d.z+"</b> km</br>");});
+    $("#list").show()
+    }
+
     data.dt.forEach(function(d) { d.x = new Date(d.x); });
     data.top.forEach(function(d) { d.LatLng = new L.LatLng(d.lat,d.lng);});
 
@@ -142,7 +152,6 @@ function refresh() {
       .style("fill-opacity",function(d) { return options.Opacity/100; })
       .append("title").text(function(d) { return d.dt.toString().slice(0,10)+" Magnitude: "+d.ml+" Depth: "+d.z+"km"; });
     z.exit().remove();
-
     map.attributionControl.setPrefix(
       d3.format(",")(data.count)+" / "+d3.format(",")(data.size)+" quakes ("+d3.format(",")(data.top.length)+" on map) - (C) 2012 <a href='mailto:ziggy.jonsson.nyc@gmail.com'>zjonsson</a>. Data parsed from <a href='http://www.vedur.is/skjalftar-og-eldgos/jardskjalftar'>Veðurstofa Íslands</a>"
     );
@@ -166,7 +175,6 @@ window.onload = function() {
   var customContainer = document.getElementById('options');
   customContainer.appendChild(gui.domElement);
 };
-
 addChart("ml",'Magnitude (Richter)',d3.scale.linear().domain([0,6]));
 addChart("z",'Depth (km)',d3.scale.linear().domain([0,30]));
 addChart("dt",'Range of dates',d3.time.scale().domain([new Date(1995,1,1),new Date(2012,11,1)]));
