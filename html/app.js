@@ -9,13 +9,44 @@ var c = [],
       Opacity:50
     };
 
-var map = L.map('map').setView([63.63, -19.5], 12)
+var map = L.map('map').setView([63.63, -19.5], 10)
     .on("moveend",refresh);
+
+var mapboxGreyUrl = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png'
+var mapboxGrey = new L.TileLayer(mapboxGreyUrl, {attribution: 'Map tiles by <a href="http://mapbox.com/about/maps/">Mapbox</a>'});
+var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/3d487eb6127d4b68adb916f293fa4785/{styleId}/256/{z}/{x}/{y}.png', cloudmadeAttribution = 'Map data &copy; 2012 OpenStreetMap contributors, Imagery &copy; 2012 CloudMade';
+var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',subDomains = ['otile1','otile2','otile3','otile4'], mapquestAttrib = 'Data, imagery and map information provided by <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>,<a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors.'
+var mapquest = new L.TileLayer(mapquestUrl, {attribution: mapquestAttrib, subdomains: subDomains});
+var minimal = new L.TileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution, styleId: 22677});
+var midnightCommander = new L.TileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution, styleId: 999}).addTo(map);
+var cloudmadeoriginal = new L.TileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution, styleId: 1});
+var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'Map data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'});
+var mapboxTerrainUrl = 'http://{s}.tiles.mapbox.com/v3/examples.map-4l7djmvo/{z}/{x}/{y}.png'
+var mapboxTerrain = new L.TileLayer(mapboxTerrainUrl, {attribution: 'Map tiles by <a href="http://mapbox.com/about/maps/">Mapbox</a>'});
+var LMI = L.tileLayer.wms("http://gis.lmi.is/arcgis/services/kort_isn93/atlas100r_isn93/MapServer/WMSServer",{layers:0,attribution:'Underlying maps © <a href="http://www.lmi.is/wp-content/uploads/2013/01/GeneralTermsNLSI.pdf">National Land Survey of Iceland</a>'});
+var StamenTonerurl = 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
+var StamenToner = new L.TileLayer(StamenTonerurl, {attribution: 'Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'});
+var StamenWatercolorurl = 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png'
+var StamenWatercolor = new L.TileLayer(StamenWatercolorurl, {attribution: 'Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'});
 
 map.attributionControl.setPrefix("");
 
-L.tileLayer.wms("http://gis.lmi.is/arcgis/services/kort_isn93/atlas100r_isn93/MapServer/WMSServer",{layers:0,attribution:'Underlying maps © <a href="http://www.lmi.is/wp-content/uploads/2013/01/GeneralTermsNLSI.pdf">National Land Survey of Iceland</a>'})
-  .addTo(map);
+var baseMaps = {
+     "Mapbox-Terrain": mapboxTerrain,
+    "Mapbox-grey": mapboxGrey,
+    "Mapquest": mapquest,
+    "OSM": osm,
+    "Minimal - Cloudmade": minimal,
+    "MidnightCommander - Cloudmade": midnightCommander,
+    "Original - Cloudmade": cloudmadeoriginal,
+    "LMI":LMI,
+    "Stamen watercolor": StamenWatercolor,
+    "Stamen toner": StamenToner,
+  };
+
+  var layersControl = new L.Control.Layers(baseMaps);
+
+    map.addControl(layersControl);
 
 // Calling _initPathRoot generates an SVG inside the leaflet DIV
 map._initPathRoot();
@@ -81,10 +112,11 @@ function addChart(dim,title,scale) {
 
   c.push(chart);
 }
-    
+
 var color = d3.scale.linear().range(["orange","red"]).domain([0,10]);
 
 function refresh() {
+
   var b=map.getBounds();
   d3.select("#loading").style("visibility","visible");
 
@@ -94,12 +126,12 @@ function refresh() {
   var z = mapsvg.selectAll(".markers")
     .attr("cx",function(d) { return map.latLngToLayerPoint(d.LatLng).x; })
     .attr("cy",function(d) { return map.latLngToLayerPoint(d.LatLng).y; });
-  
+
   d3.json("/eq?filter="+JSON.stringify(filter)+"&num="+options['# mapped'],function(err,d) {
     data = d;
     data.dt.forEach(function(d) { d.x = new Date(d.x); });
-    data.top.forEach(function(d) { d.LatLng = new L.LatLng(d.lat,d.lng); });
-    
+    data.top.forEach(function(d) { d.LatLng = new L.LatLng(d.lat,d.lng);});
+
     z=z.data(data.top,function(d) { return d.index; });
 
     z.enter().append("circle").classed("markers",true)
@@ -109,7 +141,6 @@ function refresh() {
       .style("fill",function(d) { return color(d.z); })
       .style("fill-opacity",function(d) { return options.Opacity/100; })
       .append("title").text(function(d) { return d.dt.toString().slice(0,10)+" Magnitude: "+d.ml+" Depth: "+d.z+"km"; });
-
     z.exit().remove();
 
     map.attributionControl.setPrefix(
@@ -118,6 +149,21 @@ function refresh() {
 
     c.forEach(function(d) { d.refresh();});
     d3.select("#loading").style("visibility","hidden");
+
+var node = svg.selectAll(".circle")
+    .data(nodes)
+  .enter().append("g")
+    .attr("class", "node")
+    .call(force.drag);
+
+node.append("circle")
+    .attr("r", 4.5);
+
+node.append("text")
+    .attr("dx", 12)
+    .attr("dy", ".35em")
+    .text(function(d) { return d.name });
+
   });
 }
 
@@ -128,10 +174,12 @@ function resize() {
 }
 
 window.onload = function() {
-  var gui = new dat.GUI();
+  var gui = new dat.GUI({ autoPlace: false });
   gui.add(options, 'size', 1, 10).onChange(resize);
   gui.add(options, 'Opacity', 0, 100).onChange(resize);
   gui.add(options,'# mapped',50,5000,50).onFinishChange(refresh);
+  var customContainer = document.getElementById('options');
+  customContainer.appendChild(gui.domElement);
 };
 
 addChart("ml",'Magnitude (Richter)',d3.scale.linear().domain([0,6]));

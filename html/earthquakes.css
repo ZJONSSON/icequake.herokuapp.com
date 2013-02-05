@@ -1,7 +1,7 @@
 html, body, #map { height: 100%;width:100%;}
 
-body { 
-  padding: 0; margin: 0; 
+body {
+  padding: 0; margin: 0;
 }
 
 
@@ -13,7 +13,14 @@ body {
 }
 
 
-#charts  { 
+#options  {
+  position: absolute;
+  top: 60;
+  right:10;
+
+}
+
+#charts  {
   position: absolute;
   font: 10px sans-serif;
   background: rgb(255, 255, 255);
@@ -28,7 +35,7 @@ body {
 }
 
 .chart {
-  display: block;  
+  display: block;
 }
 
 .axis path, .axis line {
@@ -68,7 +75,7 @@ body {
   font-size: 10px;
 }
 
-svg { 
+svg {
 -webkit-user-select: none;
 -khtml-user-select: none;
 -moz-user-select: none;
@@ -81,6 +88,6 @@ user-select: none; cursor:pointer;cursor:hand
 .fb-like {
   position: absolute;
   bottom: 50;
-  left:30;  
+  left:30;
 
 }
