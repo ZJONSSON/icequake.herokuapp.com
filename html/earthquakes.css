@@ -1,7 +1,7 @@
 html, body, #map { height: 100%;width:100%;}
 
-body { 
-  padding: 0; margin: 0; 
+body {
+  padding: 0; margin: 0;
 }
 
 
@@ -12,12 +12,33 @@ body {
   left:50%;
 }
 
+#options  {
+  position: absolute;
+  top: 60;
+  right:10;
 
-#charts  { 
+}
+
+#list  {
+  position: absolute;
+  top: 410;
+  background: rgb(255, 255, 255);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  margin-left: 20px;
+  border:1px solid;
+  border-radius:7px;
+  -moz-border-radius:7px;
+  box-shadow: -10px 15px 7px rgba(0,0,0,0.5);
+  font-family: Arial,Helvetica,Garuda,sans-serif;;
+  font-size: 80%;
+}
+
+#charts  {
   position: absolute;
   font: 10px sans-serif;
   background: rgb(255, 255, 255);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
   padding: 10px;
   top: 20;
   margin-left: 20px;
@@ -28,7 +49,7 @@ body {
 }
 
 .chart {
-  display: block;  
+  display: block;
 }
 
 .axis path, .axis line {
@@ -63,12 +84,13 @@ body {
   stroke : none;
 }
 
+
 .y2_top {
   text-anchor : end;
   font-size: 10px;
 }
 
-svg { 
+svg {
 -webkit-user-select: none;
 -khtml-user-select: none;
 -moz-user-select: none;
@@ -81,6 +103,6 @@ user-select: none; cursor:pointer;cursor:hand
 .fb-like {
   position: absolute;
   bottom: 50;
-  left:30;  
+  left:30;
 
 }
