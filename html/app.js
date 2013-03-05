@@ -141,13 +141,12 @@ function changeTiles() {
 
 changeTiles();
 
-window.onload = function() {
-  var gui = new dat.GUI();
-  gui.add(options,'Tiles',Object.keys(tileTypes)).onChange(changeTiles);
-  gui.add(options, 'size', 1, 10).onChange(resize);
-  gui.add(options, 'Opacity', 0, 100).onChange(resize);
-  gui.add(options,'# mapped',50,5000,50).onFinishChange(refresh);
-};
+var gui = new dat.GUI();
+gui.add(options,'Tiles',Object.keys(tileTypes)).onChange(changeTiles);
+gui.add(options, 'size', 1, 10).onChange(resize);
+gui.add(options, 'Opacity', 0, 100).onChange(resize);
+gui.add(options,'# mapped',50,5000,50).onFinishChange(refresh);
+
 addChart("ml",'Magnitude (Richter)',d3.scale.linear().domain([0,6]));
 addChart("z",'Depth (km)',d3.scale.linear().domain([0,30]));
 addChart("dt",'Range of dates',d3.time.scale().domain([new Date(1995,1,1),new Date(2012,11,1)]));
