@@ -6,47 +6,14 @@ var c = [],
       size:2,
       animated:true,
       '# mapped':1000,
-      Opacity:50
+      Opacity:50,
+      Tiles : "LMI"
     };
 
 var map = L.map('map').setView([63.63, -19.5], 10)
     .on("moveend",refresh);
 
-var mapboxGreyUrl = 'http://{s}.tiles.mapbox.com/v3/cartodb.map-1nh578vv/{z}/{x}/{y}.png'
-var mapboxGrey = new L.TileLayer(mapboxGreyUrl, {attribution: 'Map tiles by <a href="http://mapbox.com/about/maps/">Mapbox</a>'});
-var cloudmadeUrl = 'http://{s}.tile.cloudmade.com/3d487eb6127d4b68adb916f293fa4785/{styleId}/256/{z}/{x}/{y}.png', cloudmadeAttribution = 'Map data &copy; 2012 OpenStreetMap contributors, Imagery &copy; 2012 CloudMade';
-var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png',subDomains = ['otile1','otile2','otile3','otile4'], mapquestAttrib = 'Data, imagery and map information provided by <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>,<a href="http://www.openstreetmap.org/" target="_blank">OpenStreetMap</a> and contributors.'
-var mapquest = new L.TileLayer(mapquestUrl, {attribution: mapquestAttrib, subdomains: subDomains});
-var minimal = new L.TileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution, styleId: 22677});
-var midnightCommander = new L.TileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution, styleId: 999}).addTo(map);
-var cloudmadeoriginal = new L.TileLayer(cloudmadeUrl, {attribution: cloudmadeAttribution, styleId: 1});
-var osm = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'Map data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'});
-var mapboxTerrainUrl = 'http://{s}.tiles.mapbox.com/v3/examples.map-4l7djmvo/{z}/{x}/{y}.png'
-var mapboxTerrain = new L.TileLayer(mapboxTerrainUrl, {attribution: 'Map tiles by <a href="http://mapbox.com/about/maps/">Mapbox</a>'});
-var LMI = L.tileLayer.wms("http://gis.lmi.is/arcgis/services/kort_isn93/atlas100r_isn93/MapServer/WMSServer",{layers:0,attribution:'Underlying maps © <a href="http://www.lmi.is/wp-content/uploads/2013/01/GeneralTermsNLSI.pdf">National Land Survey of Iceland</a>'});
-var StamenTonerurl = 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
-var StamenToner = new L.TileLayer(StamenTonerurl, {attribution: 'Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'});
-var StamenWatercolorurl = 'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png'
-var StamenWatercolor = new L.TileLayer(StamenWatercolorurl, {attribution: 'Map tiles</a> by <a target="_top" href="http://stamen.com">Stamen Design</a>, under <a target="_top" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a target="_top" href="http://openstreetmap.org">OpenStreetMap</a>, under <a target="_top" href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'});
-
 map.attributionControl.setPrefix("");
-
-var baseMaps = {
-     "Mapbox-Terrain": mapboxTerrain,
-    "Mapbox-grey": mapboxGrey,
-    "Mapquest": mapquest,
-    "OSM": osm,
-    "Minimal - Cloudmade": minimal,
-    "MidnightCommander - Cloudmade": midnightCommander,
-    "Original - Cloudmade": cloudmadeoriginal,
-    "LMI":LMI,
-    "Stamen watercolor": StamenWatercolor,
-    "Stamen toner": StamenToner,
-  };
-
-  var layersControl = new L.Control.Layers(baseMaps);
-
-    map.addControl(layersControl);
 
 // Calling _initPathRoot generates an SVG inside the leaflet DIV
 map._initPathRoot();
@@ -153,7 +120,7 @@ function refresh() {
       .append("title").text(function(d) { return d.dt.toString().slice(0,10)+" Magnitude: "+d.ml+" Depth: "+d.z+"km"; });
     z.exit().remove();
     map.attributionControl.setPrefix(
-      d3.format(",")(data.count)+" / "+d3.format(",")(data.size)+" quakes ("+d3.format(",")(data.top.length)+" on map) - (C) 2012 <a href='mailto:ziggy.jonsson.nyc@gmail.com'>zjonsson</a>. Data parsed from <a href='http://www.vedur.is/skjalftar-og-eldgos/jardskjalftar'>Veðurstofa �?slands</a>"
+      d3.format(",")(data.count)+" / "+d3.format(",")(data.size)+" quakes ("+d3.format(",")(data.top.length)+" on map) - (C) 2012 <a href='mailto:ziggy.jonsson.nyc@gmail.com'>zjonsson</a>. Data parsed from <a href='http://www.vedur.is/skjalftar-og-eldgos/jardskjalftar'>VeÃ°urstofa Ã?slands</a>"
     );
 
     c.forEach(function(d) { d.refresh();});
@@ -167,13 +134,19 @@ function resize() {
   .style("fill-opacity",function(d) { return options.Opacity/100; });
 }
 
+function changeTiles() {
+  if (options.currentLayer) map.removeLayer(options.currentLayer);
+  (options.currentLayer = tileTypes[options.Tiles]).addTo(map);
+}
+
+changeTiles();
+
 window.onload = function() {
-  var gui = new dat.GUI({ autoPlace: false });
+  var gui = new dat.GUI();
+  gui.add(options,'Tiles',Object.keys(tileTypes)).onChange(changeTiles);
   gui.add(options, 'size', 1, 10).onChange(resize);
   gui.add(options, 'Opacity', 0, 100).onChange(resize);
   gui.add(options,'# mapped',50,5000,50).onFinishChange(refresh);
-  var customContainer = document.getElementById('options');
-  customContainer.appendChild(gui.domElement);
 };
 addChart("ml",'Magnitude (Richter)',d3.scale.linear().domain([0,6]));
 addChart("z",'Depth (km)',d3.scale.linear().domain([0,30]));
